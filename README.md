@@ -99,7 +99,7 @@ GMAIL_APP_PASSWORD=your_gmail_app_password
 ### Running the Assistant
 
 ```bash
-python agent.py
+python agent.py console
 ```
 
 The assistant will start and be ready to accept connections through LiveKit.
