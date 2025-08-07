@@ -99,10 +99,11 @@ GMAIL_APP_PASSWORD=your_gmail_app_password
 ### Running the Assistant
 
 ```bash
-python agent.py console
+python agent.py dev
 ```
 
 The assistant will start and be ready to accept connections through LiveKit.
+https://agents-playground.livekit.io/
 
 ### Interacting with Jarvis
 
