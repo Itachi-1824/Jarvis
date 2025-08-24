@@ -26,7 +26,7 @@ The following diagram illustrates the complete memory architecture with all four
 graph TB
     subgraph "Working Memory (RAM/Redis)"
         WM[Working Memory<br/>8-20 recent utterances<br/>TTL: 30-60 mins]
-        WM --> |Filters by salience| FILTER[Salience Filter<br/>Keywords + Embeddings]
+        WM --> FILTER[Salience Filter<br/>Keywords + Embeddings]
     end
 
     subgraph "Long-Term Memory Systems"
@@ -45,11 +45,11 @@ graph TB
     end
 
     USER[User Input] --> WM
-    WM --> |Recent context| CONS
+    WM --> CONS
     EM --> VDB
     SM --> VDB
     PM --> VDB
-    VDB --> |Retrieval| RAG[RAG Pipeline<br/>Query + Context]
+    VDB --> RAG[RAG Pipeline<br/>Query + Context]
     RAG --> LLM[Large Language Model]
     LLM --> RESPONSE[AI Response]
     CONS --> EM
@@ -57,7 +57,7 @@ graph TB
     CONS --> PM
     FORGET --> EM
     FORGET --> SM
-    RESPONSE --> |Feedback loop| CONS
+    RESPONSE --> CONS
 ```
 
 ## 2. Memory Architecture
@@ -81,10 +81,13 @@ sequenceDiagram
     Note over WM: Maintains immediate context<br/>for current conversation
 ```
 
-Purpose: Maintain immediate conversational context.
-Implementation: Store the most recent 8–20 utterances plus top relevant retrieved memories.
-Storage: In-memory cache (RAM/Redis) with TTL of 30–60 minutes.
-Filtering: Lightweight salience filter (keyword + embedding similarity).
+**Purpose**: Maintain immediate conversational context.
+
+**Implementation**: Store the most recent 8–20 utterances plus top relevant retrieved memories.
+
+**Storage**: In-memory cache (RAM/Redis) with TTL of 30–60 minutes.
+
+**Filtering**: Lightweight salience filter (keyword + embedding similarity).
 
 **Code Example - Working Memory Implementation:**
 
@@ -137,11 +140,15 @@ class WorkingMemory:
 ### 2.2 Episodic Memory (Experiences Across Sessions)
 
 ```mermaid
-graph LR
+graph TD
     subgraph "Session Timeline"
-        S1[Session 1<br/>2024-01-15<br/>9:00-9:45 AM] --> S2[Session 2<br/>2024-01-15<br/>2:30-3:15 PM]
-        S2 --> S3[Session 3<br/>2024-01-16<br/>10:00-10:30 AM]
-        S3 --> S4[Session 4<br/>2024-01-17<br/>8:15-9:00 AM]
+        S1[Session 1<br/>2024-01-15<br/>9:00-9:45 AM]
+        S2[Session 2<br/>2024-01-15<br/>2:30-3:15 PM]
+        S3[Session 3<br/>2024-01-16<br/>10:00-10:30 AM]
+        S4[Session 4<br/>2024-01-17<br/>8:15-9:00 AM]
+        S1 --> S2
+        S2 --> S3
+        S3 --> S4
     end
 
     subgraph "Episodic Storage"
@@ -151,21 +158,31 @@ graph LR
         E4[Episode 4<br/>Project planning<br/>Salience: 0.7<br/>Last accessed: today]
     end
 
+    subgraph "Memory Evolution"
+        FADE1[Fading memory]
+        STRONG[Strengthened]
+        RETAIN[Retained]
+        FRESH[Fresh memory]
+    end
+
     S1 --> E1
     S2 --> E2
     S3 --> E3
     S4 --> E4
 
-    E1 --> |Decay over time| FADE1[Fading memory]
-    E2 --> |Reinforced by recall| STRONG[Strengthened]
-    E3 --> |High salience| RETAIN[Retained]
-    E4 --> |Recent| FRESH[Fresh memory]
+    E1 --> FADE1
+    E2 --> STRONG
+    E3 --> RETAIN
+    E4 --> FRESH
 ```
 
-Purpose: Capture session-level summaries and notable events with temporal markers. Modern AI agent frameworks define episodic memory as storing specific interactions or "episodes" that the agent has experienced, including concrete, instance-based memories of conversations and how interactions unfolded.
-Implementation: Store 300–800 token event chunks and 1–3 session summaries with sequence order preservation.
-Storage: Vector database (e.g., Chroma, LanceDB, Weaviate, Milvus, FAISS) with order-preserving capabilities.
-Recent developments: Current theories suggest that context-absent from vanilla RAG is required for sequence order recall. Order-preserving (OP) variants of RAG can increase performance on sequence order recall tasks (SORT).
+**Purpose**: Capture session-level summaries and notable events with temporal markers. Modern AI agent frameworks define episodic memory as storing specific interactions or "episodes" that the agent has experienced, including concrete, instance-based memories of conversations and how interactions unfolded.
+
+**Implementation**: Store 300–800 token event chunks and 1–3 session summaries with sequence order preservation.
+
+**Storage**: Vector database (e.g., Chroma, LanceDB, Weaviate, Milvus, FAISS) with order-preserving capabilities.
+
+**Recent developments**: Current theories suggest that context-absent from vanilla RAG is required for sequence order recall. Order-preserving (OP) variants of RAG can increase performance on sequence order recall tasks (SORT).
 
 **Code Example - Episodic Memory Implementation:**
 
@@ -237,32 +254,30 @@ class EpisodicMemory:
 ### 2.3 Semantic Memory (Stable Facts and Preferences)
 
 ```mermaid
-graph TB
+graph TD
     subgraph "Fact Extraction Pipeline"
         INPUT[User Statement:<br/>"I prefer dark mode<br/>and use Python daily"]
-
         EXTRACT[Fact Extractor<br/>Pattern matching +<br/>LLM assistance]
-
         FACTS[Extracted Facts:<br/>• Prefers dark mode<br/>• Uses Python daily<br/>• Programming experience: Yes]
-
         VALIDATE[Validation:<br/>Confidence scoring<br/>Evidence counting<br/>Contradiction detection]
-
         STORE[Atomic Fact Storage:<br/>Each fact separate<br/>Confidence scores<br/>Evidence links]
-    end
 
-    INPUT --> EXTRACT
-    EXTRACT --> FACTS
-    FACTS --> VALIDATE
-    VALIDATE --> STORE
+        INPUT --> EXTRACT
+        EXTRACT --> FACTS
+        FACTS --> VALIDATE
+        VALIDATE --> STORE
+    end
 
     subgraph "Semantic Memory Structure"
         PREF[Preferences<br/>UI: dark_mode=true<br/>Confidence: 0.95<br/>Evidence: 2 mentions]
-
         SKILLS[Skills & Abilities<br/>Python: daily_use<br/>Confidence: 0.90<br/>Evidence: 5 mentions]
-
         PROFILE[User Profile<br/>Role: Developer<br/>Confidence: 0.85<br/>Evidence: 3 mentions]
-
         CONTEXT[Contextual Facts<br/>Timezone: inferred<br/>Confidence: 0.60<br/>Evidence: 1 mention]
+    end
+
+    subgraph "Fact Management"
+        UPDATE[Fact Updates<br/>Merge similar<br/>Resolve conflicts<br/>Update confidence]
+        DECAY[Slow Decay<br/>Requires reconfirmation<br/>Multiple evidence points<br/>Contradiction handling]
     end
 
     STORE --> PREF
@@ -270,21 +285,17 @@ graph TB
     STORE --> PROFILE
     STORE --> CONTEXT
 
-    subgraph "Fact Management"
-        UPDATE[Fact Updates<br/>Merge similar<br/>Resolve conflicts<br/>Update confidence]
-
-        DECAY[Slow Decay<br/>Requires reconfirmation<br/>Multiple evidence points<br/>Contradiction handling]
-    end
-
     PREF --> UPDATE
     SKILLS --> UPDATE
     PROFILE --> UPDATE
     CONTEXT --> DECAY
 ```
 
-Purpose: Retain persistent user facts, preferences, and identity markers. In cognitive architecture terms, semantic memory encompasses facts and concepts that form the foundation of an AI agent's knowledge base.
-Implementation: Extract atomic facts (e.g., "User prefers dark mode") using pattern-based and LLM-assisted extraction.
-Storage: Dedicated collection with stricter write rules and slower decay.
+**Purpose**: Retain persistent user facts, preferences, and identity markers. In cognitive architecture terms, semantic memory encompasses facts and concepts that form the foundation of an AI agent's knowledge base.
+
+**Implementation**: Extract atomic facts (e.g., "User prefers dark mode") using pattern-based and LLM-assisted extraction.
+
+**Storage**: Dedicated collection with stricter write rules and slower decay.
 
 **Code Example - Semantic Memory Implementation:**
 
@@ -439,25 +450,43 @@ class SemanticMemory:
 
 ```mermaid
 flowchart TD
-    subgraph "Procedural Memory Structure"
+    subgraph "Trigger Detection"
         TRIGGER[Trigger Patterns:<br/>"How do I..."<br/>"What's the process for..."<br/>"Steps to..."]
+        QUERY[User Query:<br/>"How do I debug<br/>Python code?"]
+    end
 
+    subgraph "Procedural Memory Structure"
         SKILLS[Skill Categories]
-        SKILLS --> CODE[Coding Tasks<br/>• Debug Python<br/>• Set up environment<br/>• Code review process]
-        SKILLS --> WORKFLOW[Workflows<br/>• Project setup<br/>• Git workflow<br/>• Testing procedures]
-        SKILLS --> TOOLS[Tool Usage<br/>• IDE shortcuts<br/>• Command line tricks<br/>• Library usage]
+        CODE[Coding Tasks<br/>• Debug Python<br/>• Set up environment<br/>• Code review process]
+        WORKFLOW[Workflows<br/>• Project setup<br/>• Git workflow<br/>• Testing procedures]
+        TOOLS[Tool Usage<br/>• IDE shortcuts<br/>• Command line tricks<br/>• Library usage]
 
-        CODE --> STEPS1[Step Lists<br/>1. Identify error<br/>2. Check logs<br/>3. Test fix]
-        WORKFLOW --> STEPS2[Workflow Recipes<br/>1. Create branch<br/>2. Make changes<br/>3. Create PR]
-        TOOLS --> STEPS3[Usage Guides<br/>1. Install package<br/>2. Import library<br/>3. Basic usage]
+        SKILLS --> CODE
+        SKILLS --> WORKFLOW
+        SKILLS --> TOOLS
+    end
+
+    subgraph "Procedure Storage"
+        STEPS1[Step Lists<br/>1. Identify error<br/>2. Check logs<br/>3. Test fix]
+        STEPS2[Workflow Recipes<br/>1. Create branch<br/>2. Make changes<br/>3. Create PR]
+        STEPS3[Usage Guides<br/>1. Install package<br/>2. Import library<br/>3. Basic usage]
+
+        CODE --> STEPS1
+        WORKFLOW --> STEPS2
+        TOOLS --> STEPS3
     end
 
     subgraph "Retrieval Process"
-        QUERY[User Query:<br/>"How do I debug<br/>Python code?"]
         MATCH[Pattern Matching<br/>Keywords + Embeddings]
         RETRIEVE[Retrieve Procedures<br/>Ranked by relevance]
         CONTEXT[Contextualize<br/>Adapt to current situation]
         RESPONSE[Formatted Response<br/>Step-by-step guide]
+    end
+
+    subgraph "Learning & Updates"
+        FEEDBACK[User Feedback<br/>"This worked"<br/>"This didn't work"]
+        UPDATE[Update Procedures<br/>Refine steps<br/>Add variations]
+        NEW[Learn New Procedures<br/>Extract from successful<br/>problem-solving sessions]
     end
 
     TRIGGER --> MATCH
@@ -468,27 +497,19 @@ flowchart TD
     STEPS3 --> RETRIEVE
     RETRIEVE --> CONTEXT
     CONTEXT --> RESPONSE
-
-    subgraph "Learning & Updates"
-        FEEDBACK[User Feedback<br/>"This worked"<br/>"This didn't work"]
-        UPDATE[Update Procedures<br/>Refine steps<br/>Add variations]
-        NEW[Learn New Procedures<br/>Extract from successful<br/>problem-solving sessions]
-    end
-
     RESPONSE --> FEEDBACK
     FEEDBACK --> UPDATE
-    UPDATE --> CODE
-    UPDATE --> WORKFLOW
-    UPDATE --> TOOLS
+    UPDATE --> SKILLS
     NEW --> SKILLS
 ```
 
-Purpose: Retain learned workflows and instructions. This corresponds to implicit memory in cognitive models—skills and learned tasks that can be executed without conscious awareness.
-Implementation: Short step lists or task recipes, retrieved during "how do I..." queries.
+**Purpose**: Retain learned workflows and instructions. This corresponds to implicit memory in cognitive models—skills and learned tasks that can be executed without conscious awareness.
+
+**Implementation**: Short step lists or task recipes, retrieved during "how do I..." queries.
 
 **Code Example - Procedural Memory Implementation:**
 
-````python
+```python
 from typing import Dict, List, Optional
 import json
 from dataclasses import dataclass, asdict
@@ -718,7 +739,7 @@ def create_sample_procedures():
     )
 
     return [debug_python, git_workflow]
-````
+```
 
 ---
 
@@ -739,17 +760,22 @@ Recent research in 2025 suggests implementing dual-memory architectures with syn
 
 Each memory unit is ranked using a weighted combination of similarity, recency, frequency, explicitness, importance, and type weighting.
 
-Formula:
+**Formula:**
+```
 score = 0.45 × similarity + 0.20 × recency + 0.15 × frequency + 0.10 × importance + 0.10 × type_weight
+```
 
 Scores are normalized to [0,1] and tuned per application.
 
 ### 3.3 Forgetting Mechanisms
 
-Episodic memory: Exponential decay unless reinforced, with localized query functions for efficient information retrieval to minimize catastrophic forgetting.
-Semantic memory: Slow decay; requires reconfirmation or multiple evidence points.
-Compression: Periodic clustering and centroid summarization with rehearsal mechanisms to prevent catastrophic interference.
-Adaptive forgetting: Vector databases serve as a robust memory layer that mimics how humans remember concepts rather than exact words, allowing AI to remember what matters and forget what doesn't. This follows the principle of going "Beyond the Forgetting Curve" as explored in recent 2025 memory frameworks.
+**Episodic memory**: Exponential decay unless reinforced, with localized query functions for efficient information retrieval to minimize catastrophic forgetting.
+
+**Semantic memory**: Slow decay; requires reconfirmation or multiple evidence points.
+
+**Compression**: Periodic clustering and centroid summarization with rehearsal mechanisms to prevent catastrophic interference.
+
+**Adaptive forgetting**: Vector databases serve as a robust memory layer that mimics how humans remember concepts rather than exact words, allowing AI to remember what matters and forget what doesn't. This follows the principle of going "Beyond the Forgetting Curve" as explored in recent 2025 memory frameworks.
 
 ---
 
@@ -781,41 +807,47 @@ This ensures the model operates with a coherent and personalized memory snapshot
 
 Recommended local embedding models include:
 
-BAAI/bge-base-en-v1.5 (GPU, retrieval-optimized) - Enhanced retrieval-augmented embeddings from 2023.
-sentence-transformers/all-mpnet-base-v2 (general-purpose).
-all-MiniLM-L6-v2 (CPU-efficient).
-TinyGPT and TinyGPT-V - Recent 2024 developments showing that performance doesn't always require massive model size.
+- **BAAI/bge-base-en-v1.5** (GPU, retrieval-optimized) - Enhanced retrieval-augmented embeddings from 2023.
+- **sentence-transformers/all-mpnet-base-v2** (general-purpose).
+- **all-MiniLM-L6-v2** (CPU-efficient).
+- **TinyGPT and TinyGPT-V** - Recent 2024 developments showing that performance doesn't always require massive model size.
 
-Hardware Requirements (2025): Running modern LLMs locally requires typical desktops or laptops with fast NVMe SSDs, 16–64GB of RAM, and (ideally) a discrete GPU. The more VRAM available, the larger the model that can be run efficiently.
+**Hardware Requirements (2025)**: Running modern LLMs locally requires typical desktops or laptops with fast NVMe SSDs, 16–64GB of RAM, and (ideally) a discrete GPU. The more VRAM available, the larger the model that can be run efficiently.
 
 ### 6.2 Vector Database Landscape 2025
 
 The 2025 vector database ecosystem has seen significant advances:
 
-Top vector databases include Pinecone, Weaviate, Chroma, Qdrant, and Milvus, each optimizing for different use cases.
-Vector databases now focus on enterprise-scale deployments with improved efficiency and cost-effectiveness.
-These systems have become the "memory layer of AI," enabling semantic search and contextual recall that mirrors human cognitive processes.
+- Top vector databases include Pinecone, Weaviate, Chroma, Qdrant, and Milvus, each optimizing for different use cases.
+- Vector databases now focus on enterprise-scale deployments with improved efficiency and cost-effectiveness.
+- These systems have become the "memory layer of AI," enabling semantic search and contextual recall that mirrors human cognitive processes.
 
 ### 6.3 Example Code
 
 Python examples demonstrate:
 
-Adding semantic and episodic memories.
-Retrieval with salience-based ranking.
-Consolidation passes with fact extraction and summarization.
-Integration with modern frameworks like LangChain for production deployment.
+- Adding semantic and episodic memories.
+- Retrieval with salience-based ranking.
+- Consolidation passes with fact extraction and summarization.
+- Integration with modern frameworks like LangChain for production deployment.
 
 ---
 
 ## 7. Operational Considerations
 
-Write rules: Semantic facts require explicit confirmation or ≥2 observations.
-Feedback loop: Reinforce memories when retrieval proves useful.
-Privacy & security: Encrypt at rest, allow inspection/deletion, avoid storing secrets.
-Scaling: Shard by user, cluster and summarize long-tail histories. Vector databases in 2025 focus on enterprise-scale deployments with improved efficiency.
-Evaluation: Measure retrieval hit rate, contextual relevance, hallucination reduction, and sequence order recall performance.
-Memory networks: Implement localized query functions for efficient information retrieval from memory units to minimize catastrophic forgetting.
-Infinite Retrieval and Cascading KV Cache: Recent 2025 techniques optimize LLMs for massive inputs with minimal memory and computation requirements.
+**Write rules**: Semantic facts require explicit confirmation or ≥2 observations.
+
+**Feedback loop**: Reinforce memories when retrieval proves useful.
+
+**Privacy & security**: Encrypt at rest, allow inspection/deletion, avoid storing secrets.
+
+**Scaling**: Shard by user, cluster and summarize long-tail histories. Vector databases in 2025 focus on enterprise-scale deployments with improved efficiency.
+
+**Evaluation**: Measure retrieval hit rate, contextual relevance, hallucination reduction, and sequence order recall performance.
+
+**Memory networks**: Implement localized query functions for efficient information retrieval from memory units to minimize catastrophic forgetting.
+
+**Infinite Retrieval and Cascading KV Cache**: Recent 2025 techniques optimize LLMs for massive inputs with minimal memory and computation requirements.
 
 Recent 2025 best practices emphasize building AI agents that "actually remember" by implementing sophisticated memory management that goes beyond simple conversation logging to include intelligent consolidation, selective forgetting, and context-aware retrieval.
 
