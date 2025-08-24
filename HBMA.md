@@ -961,6 +961,7 @@ graph TD
     class SIMILARITY,RECENCY,FREQUENCY,IMPORTANCE,TYPE_WEIGHT component;
     class FORMULA formula;
     class CONTEXT_ADAPT,PERSONALIZATION dynamic;
+```
 
 **Salience Scoring Implementation:**
 
