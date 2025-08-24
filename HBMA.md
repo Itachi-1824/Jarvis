@@ -922,24 +922,24 @@ graph TB
 ```mermaid
 graph TD
     subgraph "Salience Scoring Components"
-        SIMILARITY[Similarity Score<br>45% weight<br>Vector cosine similarity<br>Keyword matching<br>Semantic relevance]
+        SIMILARITY["Similarity Score<br>45% weight<br>Vector cosine similarity<br>Keyword matching<br>Semantic relevance"]
         
-        RECENCY[Recency Score<br>20% weight<br>Exponential decay<br>Last access time<br>Creation timestamp]
+        RECENCY["Recency Score<br>20% weight<br>Exponential decay<br>Last access time<br>Creation timestamp"]
         
-        FREQUENCY[Frequency Score<br>15% weight<br>Access count<br>Reference frequency<br>Usage patterns]
+        FREQUENCY["Frequency Score<br>15% weight<br>Access count<br>Reference frequency<br>Usage patterns"]
         
-        IMPORTANCE[Importance Score<br>10% weight<br>Explicit user marking<br>Emotional indicators<br>Task criticality]
+        IMPORTANCE["Importance Score<br>10% weight<br>Explicit user marking<br>Emotional indicators<br>Task criticality"]
         
-        TYPE_WEIGHT[Type Weight<br>10% weight<br>Memory type priority<br>Context relevance<br>Query type matching]
+        TYPE_WEIGHT["Type Weight<br>10% weight<br>Memory type priority<br>Context relevance<br>Query type matching"]
     end
     
     subgraph "Scoring Formula"
-        FORMULA[Salience Score =<br>0.45 × similarity +<br>0.20 × recency +<br>0.15 × frequency +<br>0.10 × importance +<br>0.10 × type_weight<br><br>Normalized to [0,1]]
+        FORMULA["Salience Score =<br>0.45 × similarity +<br>0.20 × recency +<br>0.15 × frequency +<br>0.10 × importance +<br>0.10 × type_weight<br>Normalized to [0,1]"]
     end
     
     subgraph "Dynamic Weighting"
-        CONTEXT_ADAPT[Context Adaptation<br>Query type adjustment<br>User behavior learning<br>Temporal pattern recognition]
-        PERSONALIZATION[Personalization<br>Individual preference weighting<br>Usage pattern adaptation<br>Feedback incorporation]
+        CONTEXT_ADAPT["Context Adaptation<br>Query type adjustment<br>User behavior learning<br>Temporal pattern recognition"]
+        PERSONALIZATION["Personalization<br>Individual preference weighting<br>Usage pattern adaptation<br>Feedback incorporation"]
     end
     
     SIMILARITY --> FORMULA
@@ -951,45 +951,6 @@ graph TD
     FORMULA --> CONTEXT_ADAPT
     FORMULA --> PERSONALIZATION
 
-### 7.3 Forgetting Mechanisms
-
-```mermaid
-graph TB
-    subgraph "Forgetting Strategies"
-        subgraph "Exponential Decay"
-            DECAY_EP[Episodic Memory Decay<br/>• Rapid initial decay<br/>• Slower long-term decay<br/>• Reinforcement recovery<br/>• Access-based renewal]
-            DECAY_SEM[Semantic Memory Decay<br/>• Very slow decay<br/>• Multi-evidence protection<br/>• Contradiction triggers<br/>• Confidence thresholds]
-        end
-        
-        subgraph "Adaptive Pruning"
-            LOW_SALIENCE[Low Salience Removal<br/>• Threshold-based pruning<br/>• Batch cleanup operations<br/>• Graceful degradation]
-            CAPACITY_MGT[Capacity Management<br/>• Size-based limits<br/>• LRU eviction policies<br/>• Priority preservation]
-        end
-        
-        subgraph "Compression Techniques"
-            CLUSTERING[Memory Clustering<br/>• Similar content grouping<br/>• Centroid summarization<br/>• Detail level reduction]
-            SUMMARIZATION[Progressive Summarization<br/>• Multi-level abstractions<br/>• Detail loss over time<br/>• Core concept retention]
-        end
-        
-        subgraph "Intelligent Forgetting"
-            CONTEXT_FORGET[Context-Aware Forgetting<br/>• User preference respect<br/>• Privacy-driven removal<br/>• Task relevance filtering]
-            INTERFERENCE[Interference Resolution<br/>• Conflicting information<br/>• Outdated fact removal<br/>• Consistency maintenance]
-        end
-    end
-    
-    subgraph "Forgetting Triggers"
-        TIME_TRIGGER[Time-Based<br/>• Age thresholds<br/>• Scheduled cleanup<br/>• Decay intervals]
-        SPACE_TRIGGER[Space-Based<br/>• Storage limits<br/>• Memory pressure<br/>• Performance thresholds]
-        QUALITY_TRIGGER[Quality-Based<br/>• Low confidence<br/>• Conflicting evidence<br/>• User feedback]
-    end
-    
-    TIME_TRIGGER --> DECAY_EP
-    TIME_TRIGGER --> DECAY_SEM
-    SPACE_TRIGGER --> CAPACITY_MGT
-    SPACE_TRIGGER --> CLUSTERING
-    QUALITY_TRIGGER --> INTERFERENCE
-    QUALITY_TRIGGER --> LOW_SALIENCE
-```
 
 ### 7.4 Implementation Code Examples
 
