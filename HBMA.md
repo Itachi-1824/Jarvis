@@ -922,6 +922,7 @@ graph TB
 ```mermaid
 graph TD
     subgraph "Salience Scoring Components"
+        direction LR
         SIMILARITY["Similarity Score<br>45% weight<br>Vector cosine similarity<br>Keyword matching<br>Semantic relevance"]
         
         RECENCY["Recency Score<br>20% weight<br>Exponential decay<br>Last access time<br>Creation timestamp"]
@@ -934,10 +935,12 @@ graph TD
     end
     
     subgraph "Scoring Formula"
+        direction TB
         FORMULA["Salience Score =<br>0.45 × similarity +<br>0.20 × recency +<br>0.15 × frequency +<br>0.10 × importance +<br>0.10 × type_weight<br>Normalized to [0,1]"]
     end
     
     subgraph "Dynamic Weighting"
+        direction LR
         CONTEXT_ADAPT["Context Adaptation<br>Query type adjustment<br>User behavior learning<br>Temporal pattern recognition"]
         PERSONALIZATION["Personalization<br>Individual preference weighting<br>Usage pattern adaptation<br>Feedback incorporation"]
     end
@@ -950,114 +953,14 @@ graph TD
     
     FORMULA --> CONTEXT_ADAPT
     FORMULA --> PERSONALIZATION
-
-
-### 7.4 Implementation Code Examples
-
-**Consolidation Engine:**
-
-```python
-class ConsolidationEngine:
-    def __init__(self, working_memory, episodic_memory, semantic_memory, procedural_memory):
-        self.working_memory = working_memory
-        self.episodic_memory = episodic_memory
-        self.semantic_memory = semantic_memory
-        self.procedural_memory = procedural_memory
-        self.llm_client = None  # Would be initialized with actual LLM client
     
-    def run_consolidation_cycle(self):
-        """Run complete consolidation cycle"""
-        print("Starting memory consolidation...")
-        
-        # 1. Get working memory content
-        working_context = self.working_memory.get_context(include_retrieved=False)
-        
-        if not working_context:
-            print("No working memory to consolidate")
-            return
-        
-        # 2. Analyze and classify content
-        analysis = self.analyze_working_memory(working_context)
-        
-        # 3. Extract different memory types
-        episodic_candidates = self.extract_episodic_memories(analysis)
-        semantic_candidates = self.extract_semantic_facts(analysis)
-        procedural_candidates = self.extract_procedural_knowledge(analysis)
-        
-        # 4. Store in long-term memory
-        self.store_consolidated_memories(episodic_candidates, semantic_candidates, procedural_candidates)
-        
-        # 5. Update salience scores
-        self.update_salience_scores()
-        
-        # 6. Run forgetting mechanisms
-        self.run_forgetting_cycle()
-        
-        print("Memory consolidation complete")
+    classDef component fill:#f9f,stroke:#333,stroke-width:2px;
+    classDef formula fill:#bbf,stroke:#333,stroke-width:2px;
+    classDef dynamic fill:#bfb,stroke:#333,stroke-width:2px;
     
-    def analyze_working_memory(self, context):
-        """Analyze working memory content for consolidation"""
-        # Combine all utterances into session text
-        session_text = "\n".join([item["text"] for item in context])
-        
-        # Extract themes and topics (simplified)
-        analysis = {
-            "session_text": session_text,
-            "utterance_count": len(context),
-            "themes": self.extract_themes(session_text),
-            "important_events": self.identify_important_events(context),
-            "user_statements": self.filter_user_statements(context)
-        }
-        
-        return analysis
-    
-    def extract_episodic_memories(self, analysis):
-        """Extract episodic memory candidates"""
-        candidates = []
-        
-        # Create session summary
-        if analysis["utterance_count"] >= 5:  # Minimum session length
-            summary = self.summarize_session(analysis["session_text"])
-            candidates.append({
-                "type": "session_summary",
-                "content": summary,
-                "importance": self.calculate_session_importance(analysis)
-            })
-        
-        # Extract significant events
-        for event in analysis["important_events"]:
-            candidates.append({
-                "type": "significant_event",
-                "content": event["text"],
-                "importance": event["importance"]
-            })
-        
-        return candidates
-    
-    def extract_semantic_facts(self, analysis):
-        """Extract semantic fact candidates"""
-        facts = []
-        
-        for statement in analysis["user_statements"]:
-            extracted = self.semantic_memory.extract_facts(statement["text"])
-            facts.extend(extracted)
-        
-        return facts
-    
-    def extract_procedural_knowledge(self, analysis):
-        """Extract procedural knowledge candidates"""
-        procedures = []
-        
-        # Look for successful problem-solving patterns
-        success_patterns = self.identify_success_patterns(analysis["session_text"])
-        
-        for pattern in success_patterns:
-            procedure = self.extract_procedure_from_pattern(pattern)
-            if procedure:
-                procedures.append(procedure)
-        
-        return procedures
-```
+    class SIMILARITY,RECENCY,FREQUENCY,IMPORTANCE,TYPE_WEIGHT component;
+    class FORMULA formula;
+    class CONTEXT_ADAPT,PERSONALIZATION dynamic;
 
 **Salience Scoring Implementation:**
 
