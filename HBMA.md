@@ -953,14 +953,6 @@ graph TD
     
     FORMULA --> CONTEXT_ADAPT
     FORMULA --> PERSONALIZATION
-    
-    classDef component fill:#f9f,stroke:#333,stroke-width:2px;
-    classDef formula fill:#bbf,stroke:#333,stroke-width:2px;
-    classDef dynamic fill:#bfb,stroke:#333,stroke-width:2px;
-    
-    class SIMILARITY,RECENCY,FREQUENCY,IMPORTANCE,TYPE_WEIGHT component;
-    class FORMULA formula;
-    class CONTEXT_ADAPT,PERSONALIZATION dynamic;
 ```
 
 **Salience Scoring Implementation:**
