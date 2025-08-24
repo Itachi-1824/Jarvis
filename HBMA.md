@@ -922,24 +922,24 @@ graph TB
 ```mermaid
 graph TD
     subgraph "Salience Scoring Components"
-        SIMILARITY[Similarity Score<br/>45% weight<br/>Vector cosine similarity<br/>Keyword matching<br/>Semantic relevance]
+        SIMILARITY[Similarity Score<br>45% weight<br>Vector cosine similarity<br>Keyword matching<br>Semantic relevance]
         
-        RECENCY[Recency Score<br/>20% weight<br/>Exponential decay<br/>Last access time<br/>Creation timestamp]
+        RECENCY[Recency Score<br>20% weight<br>Exponential decay<br>Last access time<br>Creation timestamp]
         
-        FREQUENCY[Frequency Score<br/>15% weight<br/>Access count<br/>Reference frequency<br/>Usage patterns]
+        FREQUENCY[Frequency Score<br>15% weight<br>Access count<br>Reference frequency<br>Usage patterns]
         
-        IMPORTANCE[Importance Score<br/>10% weight<br/>Explicit user marking<br/>Emotional indicators<br/>Task criticality]
+        IMPORTANCE[Importance Score<br>10% weight<br>Explicit user marking<br>Emotional indicators<br>Task criticality]
         
-        TYPE_WEIGHT[Type Weight<br/>10% weight<br/>Memory type priority<br/>Context relevance<br/>Query type matching]
+        TYPE_WEIGHT[Type Weight<br>10% weight<br>Memory type priority<br>Context relevance<br>Query type matching]
     end
     
     subgraph "Scoring Formula"
-        FORMULA[Salience Score =<br/>0.45 × similarity +<br/>0.20 × recency +<br/>0.15 × frequency +<br/>0.10 × importance +<br/>0.10 × type_weight<br/><br/>Normalized to [0,1]]
+        FORMULA[Salience Score =<br>0.45 × similarity +<br>0.20 × recency +<br>0.15 × frequency +<br>0.10 × importance +<br>0.10 × type_weight<br><br>Normalized to [0,1]]
     end
     
     subgraph "Dynamic Weighting"
-        CONTEXT_ADAPT[Context Adaptation<br/>• Query type adjustment<br/>• User behavior learning<br/>• Temporal pattern recognition]
-        PERSONALIZATION[Personalization<br/>• Individual preference weighting<br/>• Usage pattern adaptation<br/>• Feedback incorporation]
+        CONTEXT_ADAPT[Context Adaptation<br>Query type adjustment<br>User behavior learning<br>Temporal pattern recognition]
+        PERSONALIZATION[Personalization<br>Individual preference weighting<br>Usage pattern adaptation<br>Feedback incorporation]
     end
     
     SIMILARITY --> FORMULA
@@ -950,7 +950,6 @@ graph TD
     
     FORMULA --> CONTEXT_ADAPT
     FORMULA --> PERSONALIZATION
-```
 
 ### 7.3 Forgetting Mechanisms
 
